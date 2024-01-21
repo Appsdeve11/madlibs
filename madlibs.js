@@ -1,40 +1,71 @@
-import React, { useState } from 'react';
 
-function Madlib() {
-  const [noun, setNoun] = useState('');
-  const [verb, setVerb] = useState('');
-  const [adjective, setAdjective] = useState('');
-  const [adverb, setAdverb] = useState('');
-  const [story, setStory] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newStory = `Once upon a time, there was a ${adjective} ${noun} who loved to ${adverb} ${verb}.`;
-    setStory(newStory);
+const MadlibForm = ({ onFormSubmit }) => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = {
+      adjective: event.target.adjective.value,
+      noun: event.target.noun.value,
+      verb: event.target.verb.value,
+    };
+    onFormSubmit(formData);
   };
 
   return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Adjective:
+        <input type="text" name="adjective" />
+      </label>
+      <br />
+      <label>
+        Noun:
+        <input type="text" name="noun" />
+      </label>
+      <br />
+      <label>
+        Verb:
+        <input type="text" name="verb" />
+      </label>
+      <br />
+      <button type="submit">Generate Madlib</button>
+    </form>
+  );
+};
+
+// MadlibStory component
+const MadlibStory = ({ formData }) => {
+  const { adjective, noun, verb } = formData;
+
+  const story = `Once upon a time, there was a ${adjective} ${noun} who loved to ${verb}.`;
+
+  return (
     <div>
-      <h1>Madlibs Game</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="noun">Noun:</label>
-        <input type="text" id="noun" value={noun} onChange={(e) => setNoun(e.target.value)} required />
-
-        <label htmlFor="verb">Verb:</label>
-        <input type="text" id="verb" value={verb} onChange={(e) => setVerb(e.target.value)} required />
-
-        <label htmlFor="adjective">Adjective:</label>
-        <input type="text" id="adjective" value={adjective} onChange={(e) => setAdjective(e.target.value)} required />
-
-        <label htmlFor="adverb">Adverb:</label>
-        <input type="text" id="adverb" value={adverb} onChange={(e) => setAdverb(e.target.value)} required />
-
-        <button type="submit">Generate Story</button>
-      </form>
-
-      {story && <p>{story}</p>}
+      <h2>Madlib Story</h2>
+      <p>{story}</p>
     </div>
   );
+};
+
+// Madlib component 
+class Madlib extends React.Component {
+  state = {
+    formData: null,
+  };
+
+  handleFormSubmit = (formData) => {
+    this.setState({ formData });
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>React Madlibs</h1>
+        <MadlibForm onFormSubmit={this.handleFormSubmit} />
+        {this.state.formData && <MadlibStory formData={this.state.formData} />}
+      </div>
+    );
+  }
 }
 
-export default Madlib;
+// Render the Madlib component
+ReactDOM.render(<Madlib />, document.getElementById('root'));
